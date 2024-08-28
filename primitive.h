@@ -9,15 +9,8 @@
 
 #define PI 3.14159265358979323846
 
-#define CENTER_X 80
-#define CENTER_Y 60
-#define SCALE_FACTOR 1.5
-
-#define GRID_COLOR 0xF81F // Pink color (R=255, G=0, B=255)
-#define GRID_SPACING 10    // Distance between lines in the grid
-#define GRID_ROWS 10       // Number of rows in the grid
-#define GRID_COLUMNS 12    // Number of columns in the grid
-#define PERSPECTIVE_FACTOR 0.05f  // How much the grid "zooms" as it gets closer
+#define CENTER_X SCREEN_WIDTH/2
+#define CENTER_Y SCREEN_HEIGHT/2
 
 typedef struct {
     float x, y;
@@ -57,6 +50,7 @@ void translate_point(Vec3 *p, float tx, float ty);
 Vec2 project_3d_to_2d(Vec3 p);
 void sort_faces_by_depth(Face faces[], int count);
 void draw_line(int x0, int y0, int x1, int y1, uint16_t color);
+void draw_triangle_wireframe(float x0, float y0, float x1, float y1, float x2, float y2, uint16_t color);
 void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint16_t color);
 void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint16_t color);
 void draw_rectangle(int x0, int y0, int x1, int y1, uint16_t color);

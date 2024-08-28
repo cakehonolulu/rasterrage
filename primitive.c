@@ -123,6 +123,13 @@ void draw_line(int x0, int y0, int x1, int y1, uint16_t color) {
     }
 }
 
+void draw_triangle_wireframe(float x0, float y0, float x1, float y1, float x2, float y2, uint16_t color) {
+    // Draw lines between each pair of vertices
+    draw_line(x0, y0, x1, y1, color); // Line from vertex 0 to vertex 1
+    draw_line(x1, y1, x2, y2, color); // Line from vertex 1 to vertex 2
+    draw_line(x2, y2, x0, y0, color); // Line from vertex 2 to vertex 0
+}
+
 void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint16_t color) {
     // Draw lines between each pair of vertices
     draw_line(x0, y0, x1, y1, color);
@@ -198,18 +205,29 @@ void draw_filled_square(int x, int y, int size, uint16_t color) {
 
 // Draw wireframe cube
 void draw_wireframe_cube(Vec3 *vertices) {
-    int edges[12][2] = {
-        {0, 1}, {1, 2}, {2, 3}, {3, 0}, // Back face
-        {4, 5}, {5, 6}, {6, 7}, {7, 4}, // Front face
-        {0, 4}, {1, 5}, {2, 6}, {3, 7}  // Connecting edges
+    int faces[6][4] = {
+        {0, 1, 2, 3}, // Back face
+        {4, 5, 6, 7}, // Front face
+        {0, 1, 5, 4}, // Bottom face
+        {2, 3, 7, 6}, // Top face
+        {0, 3, 7, 4}, // Left face
+        {1, 2, 6, 5}  // Right face
     };
 
-    for (int i = 0; i < 12; i++) {
-        Vec2 p1 = project_3d_to_2d(vertices[edges[i][0]]);
-        Vec2 p2 = project_3d_to_2d(vertices[edges[i][1]]);
-        draw_triangle(p1.x / 2, p1.y / 2,
-                      p2.x / 2, p2.y / 2,
-                      p2.x / 2, p2.y / 2, color_palette[0x0F]);
+    for (int i = 0; i < 6; i++) {
+        Vec2 p1 = project_3d_to_2d(vertices[faces[i][0]]);
+        Vec2 p2 = project_3d_to_2d(vertices[faces[i][1]]);
+        Vec2 p3 = project_3d_to_2d(vertices[faces[i][2]]);
+        Vec2 p4 = project_3d_to_2d(vertices[faces[i][3]]);
+
+        draw_triangle_wireframe(p1.x / 2, p1.y / 2,
+                             p2.x / 2, p2.y / 2,
+                             p3.x / 2, p3.y / 2, 0xFFFF);
+
+        draw_triangle_wireframe(p3.x / 2, p3.y / 2,
+                             p4.x / 2, p4.y / 2,
+                             p1.x / 2, p1.y / 2, 0xFFFF);
+
     }
 }
 
@@ -301,6 +319,7 @@ void update_sprite(Sprite *sprite) {
 }
 
 void draw_filled_cube(Vec3 *vertices) {
+    drawn_triangles = 0;
     int faces[6][4] = {
         {0, 1, 2, 3}, // Back face
         {4, 5, 6, 7}, // Front face
@@ -323,6 +342,8 @@ void draw_filled_cube(Vec3 *vertices) {
         draw_filled_triangle(p3.x / 2, p3.y / 2,
                              p4.x / 2, p4.y / 2,
                              p1.x / 2, p1.y / 2, color_palette[i + 1]);
+
+        drawn_triangles += 2;
     }
 }
 
@@ -368,75 +389,6 @@ void move_cube(Vec3 *vertices, float move_x, float move_y) {
         vertices[i].x += move_x;
         vertices[i].y += move_y;
     }
-}
-
-
-void draw_perspective_grid(float perspective_factor) {
-    int start_x = 20;  // Start 20 pixels from the left edge of the screen
-    int end_x = SCREEN_WIDTH - 20;  // End 20 pixels from the right edge of the screen
-    int grid_width = end_x - start_x;  // Width of the grid
-
-    // Calculate spacing based on the grid width
-    int grid_spacing = grid_width / GRID_COLUMNS;
-
-    // Draw horizontal lines
-    for (int i = 0; i <= GRID_ROWS; i++) {
-        // Calculate the y position
-        int y = i * GRID_SPACING;
-        
-        // Calculate perspective scale based on how close the row is to the bottom
-        float scale = 1.0f + perspective_factor * ((float)SCREEN_HEIGHT - y) / SCREEN_HEIGHT;
-
-        // Draw horizontal line from start_x to end_x with perspective scaling
-        draw_line(start_x, y, end_x, y, GRID_COLOR);
-    }
-
-    int x, y_end;
-
-    // Draw vertical lines
-    for (int j = 0; j <= GRID_COLUMNS; j++) {
-        // Calculate the x position
-        x = start_x + j * GRID_SPACING;
-
-        // Calculate perspective scaling based on the row number
-        float scale = 1.0f + perspective_factor * ((float)SCREEN_HEIGHT - (GRID_ROWS * GRID_SPACING)) / SCREEN_HEIGHT;
-
-        // Calculate the end point of the vertical line based on perspective scaling
-        y_end = SCREEN_HEIGHT - 20;  // Prevent extending beyond SCREEN_HEIGHT - 30
-
-        // Calculate the y position of the vertical line to not exceed the limit
-        int y_start = 0; // Start from the top of the screen
-
-        // Draw vertical line from y_start to y_end
-        draw_line(x, y_start, x, y_end, GRID_COLOR);
-    }
-
-    draw_line(x, y_end, x + 20, SCREEN_HEIGHT, GRID_COLOR);
-    draw_line(20, y_end, 0, SCREEN_HEIGHT, GRID_COLOR);
-
-    draw_line(15, y_end + 5, x + 5, y_end + 5, GRID_COLOR);
-    draw_line(9, y_end + 12, x + 12, y_end + 12, GRID_COLOR);
- 
- // Draw 11 additional vertical lines starting from the last x position
-    int last_x = x;
-    int y_start = 0;  // Start from the top of the screen
-    for (int i = 1; i < 6; i++) {
-        int x_offset = last_x - i * GRID_SPACING;
-        draw_line(x_offset, y_end, x_offset + 15 - i * 2, SCREEN_HEIGHT, GRID_COLOR);
-
-        if (i == 5) last_x = x_offset - 10;
-    }
-
-    draw_line(last_x, y_end, last_x, SCREEN_HEIGHT, GRID_COLOR);
-
-    //last_x -= 10;
-
-    
-    for (int i = 1; i < 6; i++) {
-        int x_offset = last_x - i * GRID_SPACING;
-        draw_line(x_offset, y_end, x_offset - i * 2 - 3, SCREEN_HEIGHT, GRID_COLOR);
-    }
-
 }
 
 void draw_wavy_gradient() {

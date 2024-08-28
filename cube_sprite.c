@@ -11,6 +11,8 @@ absolute_time_t last_time;
 float frame_time = 0.0f;
 float fps = 0.0f;
 
+#define SCALE_FACTOR 1.5
+
 Vec3 cube_vertices[8] = {
     {CENTER_X - 20 * SCALE_FACTOR, CENTER_Y - 20 * SCALE_FACTOR, -20 * SCALE_FACTOR},   // Vertex 0
     {CENTER_X + 20 * SCALE_FACTOR, CENTER_Y - 20 * SCALE_FACTOR, -20 * SCALE_FACTOR},   // Vertex 1

@@ -11,6 +11,12 @@ absolute_time_t last_time;
 float frame_time = 0.0f;
 float fps = 0.0f;
 
+#define GRID_COLOR 0xF81F // Pink color (R=255, G=0, B=255)
+#define GRID_SPACING 10    // Distance between lines in the grid
+#define GRID_ROWS 10       // Number of rows in the grid
+#define GRID_COLUMNS 12    // Number of columns in the grid
+#define PERSPECTIVE_FACTOR 0.05f  // How much the grid "zooms" as it gets closer
+
 
 // Ball properties
 float ball_x = SCREEN_WIDTH / 2.0f;
@@ -21,6 +27,75 @@ float gravity = 0.2f;  // Constant downward force
 float damping = 0.95f;  // Damping factor to simulate energy loss on bounce
 
 float rotation = 0.0f;
+
+
+void draw_perspective_grid(float perspective_factor) {
+    int start_x = 20;  // Start 20 pixels from the left edge of the screen
+    int end_x = SCREEN_WIDTH - 20;  // End 20 pixels from the right edge of the screen
+    int grid_width = end_x - start_x;  // Width of the grid
+
+    // Calculate spacing based on the grid width
+    int grid_spacing = grid_width / GRID_COLUMNS;
+
+    // Draw horizontal lines
+    for (int i = 0; i <= GRID_ROWS; i++) {
+        // Calculate the y position
+        int y = i * GRID_SPACING;
+        
+        // Calculate perspective scale based on how close the row is to the bottom
+        float scale = 1.0f + perspective_factor * ((float)SCREEN_HEIGHT - y) / SCREEN_HEIGHT;
+
+        // Draw horizontal line from start_x to end_x with perspective scaling
+        draw_line(start_x, y, end_x, y, GRID_COLOR);
+    }
+
+    int x, y_end;
+
+    // Draw vertical lines
+    for (int j = 0; j <= GRID_COLUMNS; j++) {
+        // Calculate the x position
+        x = start_x + j * GRID_SPACING;
+
+        // Calculate perspective scaling based on the row number
+        float scale = 1.0f + perspective_factor * ((float)SCREEN_HEIGHT - (GRID_ROWS * GRID_SPACING)) / SCREEN_HEIGHT;
+
+        // Calculate the end point of the vertical line based on perspective scaling
+        y_end = SCREEN_HEIGHT - 20;  // Prevent extending beyond SCREEN_HEIGHT - 30
+
+        // Calculate the y position of the vertical line to not exceed the limit
+        int y_start = 0; // Start from the top of the screen
+
+        // Draw vertical line from y_start to y_end
+        draw_line(x, y_start, x, y_end, GRID_COLOR);
+    }
+
+    draw_line(x, y_end, x + 20, SCREEN_HEIGHT, GRID_COLOR);
+    draw_line(20, y_end, 0, SCREEN_HEIGHT, GRID_COLOR);
+
+    draw_line(15, y_end + 5, x + 5, y_end + 5, GRID_COLOR);
+    draw_line(9, y_end + 12, x + 12, y_end + 12, GRID_COLOR);
+ 
+ // Draw 11 additional vertical lines starting from the last x position
+    int last_x = x;
+    int y_start = 0;  // Start from the top of the screen
+    for (int i = 1; i < 6; i++) {
+        int x_offset = last_x - i * GRID_SPACING;
+        draw_line(x_offset, y_end, x_offset + 15 - i * 2, SCREEN_HEIGHT, GRID_COLOR);
+
+        if (i == 5) last_x = x_offset - 10;
+    }
+
+    draw_line(last_x, y_end, last_x, SCREEN_HEIGHT, GRID_COLOR);
+
+    //last_x -= 10;
+
+    
+    for (int i = 1; i < 6; i++) {
+        int x_offset = last_x - i * GRID_SPACING;
+        draw_line(x_offset, y_end, x_offset - i * 2 - 3, SCREEN_HEIGHT, GRID_COLOR);
+    }
+
+}
 
 int main(void) {
     //set_sys_clock_khz(200000, true);
