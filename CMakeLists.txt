@@ -15,12 +15,34 @@ set(CMAKE_CXX_STANDARD 17)
 # Initialize the Pico SDK
 pico_sdk_init()
 
+# Define an option to select the demo
+option(DEMO "Select the demo to build (e.g., BOUNCING_BALL, PRIMITIVES, CUBE_SPRITE...)" BOUNCING_BALL)
+
 if (TARGET pico_scanvideo_dpi)
-    add_executable(vega6502
-            vega6502.c
-            primitive.c
+    if(${DEMO} STREQUAL "BOUNCING_BALL")
+        add_executable(vega6502
             framebuffer.c
-            )
+            primitive.c
+            vega6502.c
+            bouncing_ball.c
+        )
+    elseif(${DEMO} STREQUAL "PRIMITIVES")
+        add_executable(vega6502
+            framebuffer.c
+            primitive.c
+            vega6502.c
+            primitive_test.c
+        )
+    elseif(${DEMO} STREQUAL "CUBE_SPRITE")
+        add_executable(vega6502
+            framebuffer.c
+            primitive.c
+            vega6502.c
+            cube_sprite.c
+        )
+    else()
+        message(FATAL_ERROR "Unknown demo selected: ${DEMO}")
+    endif()
 
     target_link_libraries(vega6502 PRIVATE
             pico_multicore
