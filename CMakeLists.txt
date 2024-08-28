@@ -47,6 +47,13 @@ if (TARGET pico_scanvideo_dpi)
             vega6502.c
             raster.c
         )
+    elseif(${DEMO} STREQUAL "SONIC")
+        add_executable(vega6502
+            framebuffer.c
+            primitive.c
+            vega6502.c
+            sonic.c
+        )
     else()
         message(FATAL_ERROR "Unknown demo selected: ${DEMO}")
     endif()
