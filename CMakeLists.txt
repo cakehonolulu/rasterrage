@@ -16,17 +16,19 @@ set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init()
 
 if (TARGET pico_scanvideo_dpi)
-    add_executable(test_pattern
+    add_executable(vega6502
             vega6502.c
+            primitive.c
+            framebuffer.c
             )
 
-    target_link_libraries(test_pattern PRIVATE
+    target_link_libraries(vega6502 PRIVATE
             pico_multicore
             pico_stdlib
             pico_scanvideo_dpi)
 
-    pico_add_extra_outputs(test_pattern)
+    pico_add_extra_outputs(vega6502)
 
-    pico_enable_stdio_uart(test_pattern 1)
-    pico_enable_stdio_usb(test_pattern 1)
+    pico_enable_stdio_uart(vega6502 1)
+    pico_enable_stdio_usb(vega6502 1)
 endif ()
