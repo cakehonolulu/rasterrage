@@ -5,7 +5,7 @@ void __time_critical_func(draw_pixels)(scanvideo_scanline_buffer_t *buffer) {
     uint16_t *p = (uint16_t *)(buffer->data + 1);  // Start at the third word of the buffer
 
     // Calculate the starting pixel position in the pixel_framebuffer
-    uint16_t *pixel_ptr = pixel_framebuffer[1] + scanvideo_scanline_number(buffer->scanline_id) * 160;
+    uint16_t *pixel_ptr = pixel_framebuffer[1] + scanvideo_scanline_number(buffer->scanline_id) * SCREEN_WIDTH;
 
     // Insert them into the buffer using the appropriate VGA format
     buffer->data[0] = COMPOSABLE_RAW_RUN | (SCREEN_WIDTH + 1 - 3 << 16);
