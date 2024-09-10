@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.12)
 
-project("Vega6502 VGA RP2040")
-
 # Pull in PICO SDK (must be before project)
 include(pico_sdk_import.cmake)
 
 # We also need PICO EXTRAS
 include(pico_extras_import.cmake)
+
+project("Vega6502 VGA RP2040" C ASM)
 
 project(pico_playground C CXX)
 set(CMAKE_C_STANDARD 11)
@@ -57,6 +57,11 @@ if (TARGET pico_scanvideo_dpi)
     else()
         message(FATAL_ERROR "Unknown demo selected: ${DEMO}")
     endif()
+
+    target_compile_definitions(vega6502 PRIVATE
+                PICO_SCANVIDEO_48MHZ=0
+                PICO_USE_SW_SPIN_LOCKS=0
+                )
 
     target_link_libraries(vega6502 PRIVATE
             pico_multicore
