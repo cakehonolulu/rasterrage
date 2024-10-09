@@ -1,2 +1,2 @@
-# vega6502
-A Raspberry Pi Pico (RP2040) based VGA controller for the Vega 6502 homebrew computer
+# RasterRage
+A Raspberry Pi Pico (RP2040) based VGA controller, contains 3D demos, simple sprites and more drawing primitives.
