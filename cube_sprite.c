@@ -1,7 +1,7 @@
 #include "primitive.h"
 #include "framebuffer.h"
 
-#include "vega6502.h"
+#include "rasterrage.h"
 
 static semaphore_t video_initted;
 static semaphore_t drawing_semaphore;

@@ -1,4 +1,4 @@
-#include "vega6502.h"
+#include "rasterrage.h"
 
 void __time_critical_func(draw_pixels)(scanvideo_scanline_buffer_t *buffer) {
     int scanline = scanvideo_scanline_number(buffer->scanline_id);
